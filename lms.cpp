@@ -181,7 +181,7 @@ int main() {
                             printTime("Due time   : ", it->dueTime);
                             if (now > it->dueTime) {
                                 int secondsLate = difftime(now, it->dueTime);
-                                int fine = secondsLate * 5;
+                                int fine = (secondsLate/(60*60*24)) * 5;
                                 cout << "Late by " << secondsLate << " seconds. Fine: Rs. " << fine << endl;
                             } else {
                                 cout << "Returned on time. No fine.\n";
