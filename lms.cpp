@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <unordered_map>
 #include <map>
@@ -61,6 +62,50 @@ public:
     bool contains(const string& key) { return search(root, key); }
     void printInOrder() { inorder(root); cout << endl; }
 };
+void saveBooks(const unordered_map<string, BookInfo>& books) {
+    ofstream fout("books.txt");
+    for (const auto& [name, info] : books) {
+        fout << name << "," << info.totalQuantity << "," << info.availableQuantity << "\n";
+    }
+}
+void loadBooks(unordered_map<string, BookInfo>& books, BST& bookTree) {
+    ifstream fin("books.txt");
+    string line;
+    while (getline(fin, line)) {
+        stringstream ss(line);
+        string name;
+        int total, available;
+
+        getline(ss, name, ',');
+        ss >> total;
+        ss.ignore(); // skip comma
+        ss >> available;
+
+        books[name] = {total, available};
+        bookTree.insert(name); // ✅ Rebuild the BST
+    }
+}
+void saveStudents(const map<int, Student>& students) {
+    ofstream fout("students.txt");
+    for (const auto& [id, stu] : students) {
+        fout << id << "," << stu.name << "," << stu.stream << "\n";
+    }
+}
+void loadStudents(map<int, Student>& students) {
+    ifstream fin("students.txt");
+    string line;
+    while (getline(fin, line)) {
+        stringstream ss(line);
+        string id_str, name, stream;
+        getline(ss, id_str, ',');
+        getline(ss, name, ',');
+        getline(ss, stream);
+
+        int id = stoi(id_str);
+        students[id] = {name, id, stream};
+    }
+}
+
 
 void printTime(const string& label, time_t t) {
     tm* tm_info = localtime(&t);
@@ -72,10 +117,8 @@ int main() {
     map<int, Student> students;
     BST bookTree;
 
-    // Preload students
-    students[101] = {"Rajvi", 101, "B.Tech-ICT"};
-    students[102] = {"Krushna", 102, "B.Tech-ICT"};
-    students[103] = {"Kalagee", 103, "B.Tech-ICT"};
+loadBooks(books, bookTree);
+loadStudents(students);
 
     int choice;
     while (true) {
@@ -134,13 +177,35 @@ int main() {
             }
 
         } else if (choice == 2) {
-            int sid;
-            cout << "Enter Student ID: ";
-            cin >> sid;
-            if (!students.count(sid)) {
-                cout << "Invalid student ID.\n";
-                continue;
-            }
+int stuMainChoice;
+cout << "\n1. Create New Student Account\n2. Login as Existing Student\nEnter choice: ";
+cin >> stuMainChoice;
+
+int sid;
+if (stuMainChoice == 1) {
+    string name, stream;
+    cout << "Enter new Student ID: ";
+    cin >> sid;
+    if (students.count(sid)) {
+        cout << "Student ID already exists.\n";
+        continue;
+    }
+    cin.ignore();
+    cout << "Enter name: ";
+    getline(cin, name);
+    cout << "Enter stream: ";
+    getline(cin, stream);
+
+    students[sid] = {name, sid, stream};
+    cout << "Account created. You can now log in.\n";
+}
+cout << "Enter your Student ID to login: ";
+cin >> sid;
+if (!students.count(sid)) {
+    cout << "Invalid student ID.\n";
+    continue;
+}
+
 
             Student& stu = students[sid];
             int stuChoice;
@@ -200,5 +265,8 @@ int main() {
             break;
         }
     }
+    saveBooks(books);
+    saveStudents(students);
+    
     return 0;
 }
