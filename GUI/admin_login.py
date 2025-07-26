@@ -1,7 +1,7 @@
 # admin_login.py
 import tkinter as tk
 from tkinter import messagebox
-from admin_dashboard import AdminDashboard
+from librarian_dashboard import AdminDashboard
 
 def AdminLogin(root):
     window = tk.Toplevel(root)
