@@ -5,8 +5,8 @@ import subprocess
 def open_student_login():
     subprocess.Popen(["python", "student_login.py"])
 
-def open_librarian_dashboard():
-    subprocess.Popen(["python", "librarian_dashboard.py"])
+def open_admin_login():
+    subprocess.Popen(["python", "admin_login.py"])
 
 root = tk.Tk()
 root.title("Library System - Select Role")
@@ -18,7 +18,7 @@ label.pack(pady=15)
 student_button = tk.Button(root, text="Student", width=20, command=open_student_login)
 student_button.pack(pady=5)
 
-librarian_button = tk.Button(root, text="Librarian", width=20, command=open_librarian_dashboard)
+librarian_button = tk.Button(root, text="Librarian", width=20, command=open_admin_login)
 librarian_button.pack(pady=5)
 
 root.mainloop()
