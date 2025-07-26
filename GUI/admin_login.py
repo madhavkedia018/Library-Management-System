@@ -23,3 +23,7 @@ def AdminLogin(root):
             messagebox.showerror("Login Failed", "Invalid credentials")
 
     tk.Button(window, text="Login", command=login).pack(pady=10)
+
+    
+def main():
+    open_admin_login()
