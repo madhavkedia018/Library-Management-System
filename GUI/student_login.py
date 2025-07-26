@@ -84,3 +84,7 @@ tk.Label(root, text="OR").pack()
 tk.Button(root, text="Create New Account", command=create_account, height=2, width=20).pack(pady=10)
 
 root.mainloop()
+
+    
+def main():
+    open_student_login()
