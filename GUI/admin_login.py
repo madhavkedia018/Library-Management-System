@@ -1,25 +1,27 @@
-# admin_login.py
 import tkinter as tk
 from tkinter import messagebox
-from admin_dashboard import AdminDashboard
+import subprocess
 
-def AdminLogin(root):
-    window = tk.Toplevel(root)
-    window.title("Librarian Login")
+# Define the password
+ADMIN_PASSWORD = "admin123"  # You can change this
 
-    tk.Label(window, text="User ID").pack(pady=5)
-    uid_entry = tk.Entry(window)
-    uid_entry.pack(pady=5)
+def check_password():
+    entered = password_entry.get()
+    if entered == ADMIN_PASSWORD:
+        root.destroy()
+        subprocess.Popen(["python", "admin_dashboard.py"])
+    else:
+        messagebox.showerror("Access Denied", "Incorrect password.")
 
-    tk.Label(window, text="Password").pack(pady=5)
-    pwd_entry = tk.Entry(window, show='*')
-    pwd_entry.pack(pady=5)
+root = tk.Tk()
+root.title("Admin Login")
+root.geometry("300x150")
 
-    def login():
-        if uid_entry.get() == "admin" and pwd_entry.get() == "1234":
-            window.destroy()
-            AdminDashboard(root)
-        else:
-            messagebox.showerror("Login Failed", "Invalid credentials")
+tk.Label(root, text="Enter Admin Password:", font=("Arial", 12)).pack(pady=10)
+password_entry = tk.Entry(root, show="*", width=25)
+password_entry.pack()
 
-    tk.Button(window, text="Login", command=login).pack(pady=10)
+login_btn = tk.Button(root, text="Login", command=check_password)
+login_btn.pack(pady=10)
+
+root.mainloop()
