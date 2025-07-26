@@ -1,25 +1,27 @@
 import tkinter as tk
-from tkinter import messagebox
 import subprocess
-import os
 
-def issue_book():
-    subprocess.Popen(["python", "issue_book.py"])
+def open_admin_dashboard():
+    window = tk.Tk()
+    window.title("Admin Dashboard")
 
-def return_book():
-    subprocess.Popen(["python", "return_book.py"])
+    tk.Label(window, text="Welcome Admin!", font=("Helvetica", 14, "bold")).pack(pady=15)
 
-def view_books():
-    os.system("notepad books.txt")
+    def add_book():
+        subprocess.run(["library_backend.exe", "add_book"])
 
-root = tk.Tk()
-root.title("Admin Dashboard")
-root.geometry("300x200")
+    def update_quantity():
+        subprocess.run(["library_backend.exe", "update_quantity"])
 
-tk.Label(root, text="Welcome Admin!", font=("Arial", 14)).pack(pady=15)
+    def view_books():
+        subprocess.run(["library_backend.exe", "view_books"])
 
-tk.Button(root, text="Issue Book", command=issue_book, width=20).pack(pady=5)
-tk.Button(root, text="Return Book", command=return_book, width=20).pack(pady=5)
-tk.Button(root, text="View Books File", command=view_books, width=20).pack(pady=5)
+    def view_inorder():
+        subprocess.run(["library_backend.exe", "view_inorder"])
 
-root.mainloop()
+    tk.Button(window, text="Add Book", width=20, command=add_book).pack(pady=5)
+    tk.Button(window, text="Update Quantity", width=20, command=update_quantity).pack(pady=5)
+    tk.Button(window, text="View Books", width=20, command=view_books).pack(pady=5)
+    tk.Button(window, text="View Inorder", width=20, command=view_inorder).pack(pady=5)
+
+    window.mainloop()
