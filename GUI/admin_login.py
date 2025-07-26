@@ -26,3 +26,7 @@ def open_admin_login():
     tk.Button(window, text="Login", command=check_credentials).pack(pady=20)
 
     window.mainloop()
+    
+def main():
+    open_admin_login()
+
