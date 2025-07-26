@@ -1,32 +1,25 @@
+# admin_login.py
 import tkinter as tk
 from tkinter import messagebox
-from admin_dashboard import open_admin_dashboard
+from admin_dashboard import AdminDashboard
 
-def open_admin_login():
-    def check_credentials():
-        uid = entry_user.get()
-        pwd = entry_pass.get()
-        if uid == "admin" and pwd == "1234":
+def AdminLogin(root):
+    window = tk.Toplevel(root)
+    window.title("Librarian Login")
+
+    tk.Label(window, text="User ID").pack(pady=5)
+    uid_entry = tk.Entry(window)
+    uid_entry.pack(pady=5)
+
+    tk.Label(window, text="Password").pack(pady=5)
+    pwd_entry = tk.Entry(window, show='*')
+    pwd_entry.pack(pady=5)
+
+    def login():
+        if uid_entry.get() == "admin" and pwd_entry.get() == "1234":
             window.destroy()
-            open_admin_dashboard()
+            AdminDashboard(root)
         else:
-            messagebox.showerror("Error", "Invalid login credentials")
+            messagebox.showerror("Login Failed", "Invalid credentials")
 
-    window = tk.Tk()
-    window.title("Admin Login")
-
-    tk.Label(window, text="Admin UserID:").pack(pady=5)
-    entry_user = tk.Entry(window)
-    entry_user.pack(pady=5)
-
-    tk.Label(window, text="Password:").pack(pady=5)
-    entry_pass = tk.Entry(window, show='*')
-    entry_pass.pack(pady=5)
-
-    tk.Button(window, text="Login", command=check_credentials).pack(pady=20)
-
-    window.mainloop()
-    
-def main():
-    open_admin_login()
-
+    tk.Button(window, text="Login", command=login).pack(pady=10)
