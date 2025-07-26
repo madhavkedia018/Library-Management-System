@@ -5,7 +5,7 @@ from admin_dashboard import AdminDashboard
 
 def AdminLogin(root):
     window = tk.Toplevel(root)
-    window.title("Librarian Login")
+    window.title("Admin Login")
     
     tk.Label(window, text="User ID").pack(pady=5)
     uid_entry = tk.Entry(window)
