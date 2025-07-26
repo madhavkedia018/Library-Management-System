@@ -21,11 +21,12 @@ def save_books(books):
             f.write(f"{name},{info['total']},{info['available']}\n")
 
 def get_student_data(sid):
-    with open("students.txt", "r") as f:
-        for line in f:
-            parts = line.strip().split(",")
-            if int(parts[0]) == sid:
-                return {"name": parts[1], "stream": parts[2]}
+    if os.path.exists("students.txt"):
+        with open("students.txt", "r") as f:
+            for line in f:
+                parts = line.strip().split(",")
+                if len(parts) >= 3 and int(parts[0]) == sid:
+                    return {"name": parts[1], "stream": parts[2]}
     return None
 
 def get_issued_file(sid):
@@ -59,9 +60,9 @@ def launch_dashboard(sid):
 
     dashboard = tk.Tk()
     dashboard.title(f"{user['name']}'s Dashboard")
-    dashboard.geometry("400x400")
+    dashboard.geometry("500x500")
 
-    tk.Label(dashboard, text=f"Welcome, {user['name']} ({user['stream']})", font=("Arial", 12)).pack(pady=10)
+    tk.Label(dashboard, text=f"Welcome, {user['name']} ({user['stream']})", font=("Arial", 14, "bold")).pack(pady=10)
 
     issued_books = load_issued_books(sid)
     books = load_books()
@@ -77,10 +78,19 @@ def launch_dashboard(sid):
         if len(issued_books) >= 2:
             messagebox.showwarning("Limit", "You can issue only 2 books.")
             return
-        name = entry.get()
+        name = entry.get().strip()
+        if not name:
+            messagebox.showerror("Error", "Please enter book name.")
+            return
         if name not in books or books[name]['available'] <= 0:
             messagebox.showerror("Unavailable", "Book not available.")
             return
+        # Check if already issued
+        for book in issued_books:
+            if book['book'] == name:
+                messagebox.showerror("Already Issued", "You have already issued this book.")
+                return
+        
         now = int(time.time())
         due = now + 14*24*60*60
         issued_books.append({"book": name, "issue": now, "due": due})
@@ -88,10 +98,14 @@ def launch_dashboard(sid):
         save_issued_books(sid, issued_books)
         save_books(books)
         messagebox.showinfo("Success", f"Issued '{name}' until {datetime.fromtimestamp(due).strftime('%d/%m/%Y')}")
+        entry.delete(0, tk.END)
         refresh_issued_list()
 
     def return_book():
-        name = entry.get()
+        name = entry.get().strip()
+        if not name:
+            messagebox.showerror("Error", "Please enter book name.")
+            return
         for rec in issued_books:
             if rec['book'] == name:
                 now = int(time.time())
@@ -109,19 +123,43 @@ def launch_dashboard(sid):
                 else:
                     msg += " Returned on time."
                 messagebox.showinfo("Returned", msg)
+                entry.delete(0, tk.END)
                 refresh_issued_list()
                 return
         messagebox.showwarning("Not Found", "You haven't issued this book.")
 
-    entry = tk.Entry(dashboard, width=30)
+    def view_available_books():
+        books = load_books()
+        available = [f"{name} (Available: {info['available']})" for name, info in books.items() if info['available'] > 0]
+        if available:
+            messagebox.showinfo("Available Books", "\n".join(available))
+        else:
+            messagebox.showinfo("Available Books", "No books available.")
+
+    # Book name entry
+    tk.Label(dashboard, text="Book Name:", font=("Arial", 12)).pack(pady=(20, 5))
+    entry = tk.Entry(dashboard, width=30, font=("Arial", 11))
     entry.pack(pady=5)
 
-    tk.Button(dashboard, text="Issue Book", command=issue_book).pack(pady=5)
-    tk.Button(dashboard, text="Return Book", command=return_book).pack(pady=5)
+    # Buttons
+    button_frame = tk.Frame(dashboard)
+    button_frame.pack(pady=10)
+    
+    tk.Button(button_frame, text="Issue Book", command=issue_book, width=15, bg="green", fg="white").pack(side=tk.LEFT, padx=5)
+    tk.Button(button_frame, text="Return Book", command=return_book, width=15, bg="orange", fg="white").pack(side=tk.LEFT, padx=5)
+    
+    tk.Button(dashboard, text="View Available Books", command=view_available_books, width=20, bg="blue", fg="white").pack(pady=10)
 
-    tk.Label(dashboard, text="Books Issued:").pack(pady=10)
-    listbox = tk.Listbox(dashboard, width=50)
-    listbox.pack()
+    # Issued books list
+    tk.Label(dashboard, text="Your Issued Books:", font=("Arial", 12, "bold")).pack(pady=(20, 5))
+    listbox = tk.Listbox(dashboard, width=60, height=8)
+    listbox.pack(pady=5)
+
+    # Logout button
+    def logout():
+        dashboard.destroy()
+    
+    tk.Button(dashboard, text="Logout", command=logout, width=20, bg="red", fg="white").pack(pady=20)
 
     refresh_issued_list()
     dashboard.mainloop()
